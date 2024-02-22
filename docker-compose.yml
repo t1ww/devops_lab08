@@ -1,18 +1,27 @@
-version: '3.3'
+version: "3.3"
+
 services:
   db:
-    image: mysql
-    command: --default-authentication-plugin=mysql_native_password
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: password
+    image: mongo:4.4
+    networks:
+      - todo_net
     volumes:
-      - dv-db:/var/lib/mysql
+      - type: volume
+        source: dbdata
+        target: /data/db
 
-  adminer:
-    image: adminer
-    restart: always
+  front_end:
+    image: mikegcoleman/todo:latest
     ports:
-      - 8102:8080
+      - "80:3000"
+    networks:
+      - todo_net
+    environment: 
+      - DB_URL=mongodb://db:27017
+      - DEBUG=app:*
+    
+networks:
+  todo_net:
+
 volumes:
-  dv-db:
+  dbdata:
